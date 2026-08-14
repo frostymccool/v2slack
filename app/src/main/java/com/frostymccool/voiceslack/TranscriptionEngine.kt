@@ -148,6 +148,13 @@ class TranscriptionEngine(
         }
     }
 
+    /** Called when the hosting Activity is about to be torn down for a config change
+     * (e.g. fold/unfold). Deliberately a no-op: [handle] is kept alive -- recognition keeps
+     * running against the application context, and the ViewModel (which owns this engine)
+     * survives recreation -- so the in-flight capture is not interrupted. Exists mainly to
+     * document and test that contract explicitly. */
+    fun onHostConfigurationChanging() = Unit
+
     private fun releaseHandle() {
         handle?.destroy()
         handle = null
