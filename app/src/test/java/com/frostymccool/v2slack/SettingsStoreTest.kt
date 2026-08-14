@@ -1,4 +1,4 @@
-package com.frostymccool.voiceslack
+package com.frostymccool.v2slack
 
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider

@@ -1,4 +1,4 @@
-package com.frostymccool.voiceslack
+package com.frostymccool.v2slack
 
 import android.content.Context
 import android.content.SharedPreferences
@@ -45,7 +45,7 @@ class SettingsStore(context: Context) {
         set(value) = prefs.edit().putString(KEY_OUTPUT_MODE, value.name).apply()
 
     companion object {
-        private const val PREFS_NAME = "voice_slack_settings"
+        private const val PREFS_NAME = "v2slack_settings"
         private const val KEY_WEBHOOK_URL = "webhook_url"
         private const val KEY_CHANNEL_HINT = "channel_hint"
         private const val KEY_OUTPUT_MODE = "output_mode"

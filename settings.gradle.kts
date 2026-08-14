@@ -14,5 +14,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "VoiceSlack"
+rootProject.name = "V2Slack"
 include(":app")

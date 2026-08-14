@@ -1,12 +1,12 @@
-package com.frostymccool.voiceslack
+package com.frostymccool.v2slack
 
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.speech.RecognitionListener
 import android.speech.SpeechRecognizer
-import com.frostymccool.voiceslack.actions.ActionResult
-import com.frostymccool.voiceslack.actions.RemoteAction
+import com.frostymccool.v2slack.actions.ActionResult
+import com.frostymccool.v2slack.actions.RemoteAction
 
 /**
  * Drivable stand-in for the real [SpeechRecognizerHandle] so tests can push

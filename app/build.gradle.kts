@@ -5,11 +5,11 @@ plugins {
 }
 
 android {
-    namespace = "com.frostymccool.voiceslack"
+    namespace = "com.frostymccool.v2slack"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.frostymccool.voiceslack"
+        applicationId = "com.frostymccool.v2slack"
         // 31+ is required for SpeechRecognizer.createOnDeviceSpeechRecognizer(), the strict
         // on-device recognizer that never falls back to network. Fine for the target devices
         // (Fold7/8 ship well above this); see DECISIONS.md.

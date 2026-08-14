@@ -1,13 +1,13 @@
-package com.frostymccool.voiceslack
+package com.frostymccool.v2slack
 
 import android.app.Application
 import android.content.Context
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import com.frostymccool.voiceslack.actions.ActionResult
-import com.frostymccool.voiceslack.actions.RemoteAction
-import com.frostymccool.voiceslack.actions.SlackDeepLinkAction
-import com.frostymccool.voiceslack.actions.SlackWebhookAction
+import com.frostymccool.v2slack.actions.ActionResult
+import com.frostymccool.v2slack.actions.RemoteAction
+import com.frostymccool.v2slack.actions.SlackDeepLinkAction
+import com.frostymccool.v2slack.actions.SlackWebhookAction
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

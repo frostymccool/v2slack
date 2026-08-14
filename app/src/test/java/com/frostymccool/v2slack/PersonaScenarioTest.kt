@@ -1,9 +1,9 @@
-package com.frostymccool.voiceslack
+package com.frostymccool.v2slack
 
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider
-import com.frostymccool.voiceslack.actions.ActionResult
-import com.frostymccool.voiceslack.actions.RemoteAction
+import com.frostymccool.v2slack.actions.ActionResult
+import com.frostymccool.v2slack.actions.RemoteAction
 import com.google.common.truth.Truth.assertThat
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi

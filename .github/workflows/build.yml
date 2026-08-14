@@ -34,7 +34,7 @@ jobs:
       - name: Upload debug APK
         uses: actions/upload-artifact@v4
         with:
-          name: voice-slack-debug-apk
+          name: v2slack-debug-apk
           path: app/build/outputs/apk/debug/*.apk
           if-no-files-found: error
 

@@ -1,4 +1,4 @@
-# Voice Slack
+# V2Slack
 
 One-tap Android note-taker: tap, speak, the phone transcribes the note fully on-device
 (offline, no cloud), you review/edit the text, then it goes to a Slack channel.

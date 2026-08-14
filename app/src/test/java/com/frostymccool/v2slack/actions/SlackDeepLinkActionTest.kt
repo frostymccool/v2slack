@@ -1,4 +1,4 @@
-package com.frostymccool.voiceslack.actions
+package com.frostymccool.v2slack.actions
 
 import android.app.Application
 import android.content.Intent

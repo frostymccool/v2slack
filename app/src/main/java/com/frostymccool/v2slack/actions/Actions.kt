@@ -1,4 +1,4 @@
-package com.frostymccool.voiceslack.actions
+package com.frostymccool.v2slack.actions
 
 import android.content.ActivityNotFoundException
 import android.content.Context

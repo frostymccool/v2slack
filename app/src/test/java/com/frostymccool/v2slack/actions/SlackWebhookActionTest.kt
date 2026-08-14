@@ -1,4 +1,4 @@
-package com.frostymccool.voiceslack.actions
+package com.frostymccool.v2slack.actions
 
 import androidx.test.core.app.ApplicationProvider
 import com.google.common.truth.Truth.assertThat

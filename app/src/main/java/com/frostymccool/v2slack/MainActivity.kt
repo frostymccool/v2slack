@@ -1,4 +1,4 @@
-package com.frostymccool.voiceslack
+package com.frostymccool.v2slack
 
 import android.Manifest
 import android.app.Activity
@@ -90,7 +90,7 @@ fun VoiceApp(viewModel: VoiceViewModel = viewModel()) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(if (screen == Screen.Record) "Voice Slack" else "Settings") },
+                title = { Text(if (screen == Screen.Record) "V2Slack" else "Settings") },
                 navigationIcon = {
                     if (screen == Screen.Settings) {
                         IconButton(onClick = { screen = Screen.Record }) {
