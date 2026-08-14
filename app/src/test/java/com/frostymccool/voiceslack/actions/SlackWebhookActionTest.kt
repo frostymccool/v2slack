@@ -108,10 +108,12 @@ class SlackWebhookActionTest {
 
     @Test
     fun `unresponsive server (timeout) is a retryable failure`() = runBlocking {
+        // Delay the response headers, not just the body: the action never reads the response
+        // body (it only inspects the status code), so a body-only delay would never be
+        // noticed -- onResponse() fires as soon as headers arrive.
         server.enqueue(
             MockResponse()
-                .setBody("late")
-                .setBodyDelay(5, TimeUnit.SECONDS),
+                .setHeadersDelay(5, TimeUnit.SECONDS),
         )
         val action = SlackWebhookAction(webhookUrlProvider = { server.url("/services/hook").toString() }, httpClient = client)
 

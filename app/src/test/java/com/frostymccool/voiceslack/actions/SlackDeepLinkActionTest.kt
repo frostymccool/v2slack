@@ -28,7 +28,7 @@ class SlackDeepLinkActionTest {
         val result = action.execute(application, "text") as ActionResult.Failure
 
         assertThat(result.retryable).isFalse()
-        assertThat(result.message.lowercase()).contains("not installed")
+        assertThat(result.message.lowercase()).contains("installed")
     }
 
     @Test

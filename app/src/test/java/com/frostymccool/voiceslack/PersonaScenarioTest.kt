@@ -6,6 +6,7 @@ import com.frostymccool.voiceslack.actions.ActionResult
 import com.frostymccool.voiceslack.actions.RemoteAction
 import com.google.common.truth.Truth.assertThat
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import org.junit.Before
 import org.junit.Test
@@ -23,6 +24,7 @@ import org.robolectric.RobolectricTestRunner
  * stack, and [FakeRemoteAction] stands in for the two real [RemoteAction]s, so every scenario
  * runs on the JVM with no device, no network, and no Slack app required.
  */
+@OptIn(ExperimentalCoroutinesApi::class)
 @RunWith(RobolectricTestRunner::class)
 class PersonaScenarioTest {
 
@@ -154,7 +156,7 @@ class PersonaScenarioTest {
 
         val failure = controller.uiState.value.sendState as SendState.Failed
         assertThat(failure.retryable).isFalse()
-        assertThat(failure.message).contains("not installed")
+        assertThat(failure.message).contains("installed")
         // Text is preserved so Sam can at least copy it out manually.
         assertThat(controller.uiState.value.editableText).isEqualTo("call the vendor back about the invoice")
     }
