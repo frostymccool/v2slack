@@ -1,8 +1,27 @@
+import java.time.Instant
+import java.time.ZoneOffset
+import java.time.format.DateTimeFormatter
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     id("org.jetbrains.kotlin.plugin.compose")
 }
+
+// Captured at Gradle configuration time, i.e. whenever this build actually ran -- lets the
+// app show on-screen proof of which build is installed (see BuildInfoFooter in MainActivity.kt).
+fun gitShortSha(): String = try {
+    val process = ProcessBuilder("git", "rev-parse", "--short", "HEAD")
+        .redirectErrorStream(true)
+        .start()
+    process.waitFor()
+    process.inputStream.bufferedReader().readText().trim().ifBlank { "unknown" }
+} catch (e: Exception) {
+    "unknown"
+}
+
+fun buildTimestamp(): String =
+    DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm").withZone(ZoneOffset.UTC).format(Instant.now()) + " UTC"
 
 android {
     namespace = "com.frostymccool.v2slack"
@@ -17,6 +36,9 @@ android {
         targetSdk = 34
         versionCode = 2
         versionName = "0.1.1"
+
+        buildConfigField("String", "GIT_SHA", "\"${gitShortSha()}\"")
+        buildConfigField("String", "BUILD_TIME", "\"${buildTimestamp()}\"")
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -39,6 +61,7 @@ android {
 
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 
     packaging {

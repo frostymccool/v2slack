@@ -214,7 +214,22 @@ private fun RecordScreen(
         }
 
         SendStatusLine(uiState.sendState)
+        Spacer(Modifier.weight(1f))
+        BuildInfoFooter()
     }
+}
+
+/** Small, low-contrast build stamp pinned to the bottom of the screen so it's obvious --
+ * without hunting through app info -- whether a freshly installed APK actually took. Shows
+ * version, git commit, and when this specific build was produced. */
+@Composable
+private fun BuildInfoFooter() {
+    Text(
+        text = "v${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE}) · ${BuildConfig.GIT_SHA} · built ${BuildConfig.BUILD_TIME}",
+        style = MaterialTheme.typography.labelSmall,
+        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.55f),
+        modifier = Modifier.padding(top = 16.dp),
+    )
 }
 
 @Composable
@@ -344,6 +359,8 @@ private fun SettingsScreen(
             singleLine = true,
             placeholder = { Text("team-updates") },
         )
+        Spacer(Modifier.weight(1f))
+        BuildInfoFooter()
     }
 }
 
