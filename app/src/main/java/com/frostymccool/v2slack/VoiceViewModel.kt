@@ -68,7 +68,7 @@ class VoiceController(
 
     fun onRecordTapped(hasMicPermission: Boolean) {
         when (_uiState.value.transcription) {
-            is TranscriptionState.Listening -> engine.cancel()
+            is TranscriptionState.Listening -> engine.stop()
             is TranscriptionState.Processing -> Unit
             else -> {
                 _uiState.value = _uiState.value.copy(editableText = "", sendState = SendState.Idle)

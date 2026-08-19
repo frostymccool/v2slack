@@ -15,6 +15,8 @@ import com.frostymccool.v2slack.actions.RemoteAction
 class FakeSpeechRecognizerHandle(private val listener: RecognitionListener) : SpeechRecognizerHandle {
     var startedIntent: Intent? = null
         private set
+    var stopCalled = false
+        private set
     var cancelCalled = false
         private set
     var destroyCalled = false
@@ -22,6 +24,10 @@ class FakeSpeechRecognizerHandle(private val listener: RecognitionListener) : Sp
 
     override fun startListening(intent: Intent) {
         startedIntent = intent
+    }
+
+    override fun stopListening() {
+        stopCalled = true
     }
 
     override fun cancel() {

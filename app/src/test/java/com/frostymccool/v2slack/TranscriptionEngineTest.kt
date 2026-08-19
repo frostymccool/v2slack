@@ -132,6 +132,35 @@ class TranscriptionEngineTest {
     }
 
     @Test
+    fun `stop while listening tells the recognizer to finalize, not cancel -- the tap-to-stop button`() {
+        engine.start(hasMicPermission = true)
+        val handle = factory.lastHandle!!
+        handle.emitReadyForSpeech()
+
+        engine.stop()
+
+        assertThat(handle.stopCalled).isTrue()
+        assertThat(handle.cancelCalled).isFalse()
+        // Still listening from the engine's point of view until the recognizer actually
+        // reports back -- stop() doesn't fabricate a state change, it just asks for one.
+        assertThat(engine.state.value).isEqualTo(TranscriptionState.Listening)
+
+        handle.emitEndOfSpeech()
+        assertThat(engine.state.value).isEqualTo(TranscriptionState.Processing)
+        handle.emitResults("stop tap finalized this note")
+        assertThat(engine.state.value)
+            .isEqualTo(TranscriptionState.Success("stop tap finalized this note"))
+    }
+
+    @Test
+    fun `stop when not listening is a no-op`() {
+        engine.stop()
+
+        assertThat(engine.state.value).isEqualTo(TranscriptionState.Idle)
+        assertThat(factory.createCount).isEqualTo(0)
+    }
+
+    @Test
     fun `duplicate start while already listening is ignored, not a second session`() {
         engine.start(hasMicPermission = true)
         factory.lastHandle!!.emitReadyForSpeech()

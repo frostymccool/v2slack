@@ -250,18 +250,28 @@ class PersonaScenarioTest {
             .isEqualTo(TranscriptionState.Error(TranscriptionError.NO_SPEECH_DETECTED))
     }
 
-    // -- Omar: double-taps the record button while it's already listening ---------------------
+    // -- Omar: taps record again while listening to signal he's done speaking -----------------
 
     @Test
-    fun `Omar double-taps record while already listening and it cancels instead of starting a second session`() {
+    fun `Omar taps record again while listening, gets his transcript instead of losing it`() {
         controller.onRecordTapped(hasMicPermission = true)
         val handle = recognizerFactory.lastHandle!!
         handle.emitReadyForSpeech()
 
+        // This is the "Stop" button shown during Listening -- it must finalize the capture,
+        // not discard it. (Previously this called cancel() and threw the recording away with
+        // no feedback to the user -- the exact bug this persona guards against.)
         controller.onRecordTapped(hasMicPermission = true)
 
-        assertThat(handle.cancelCalled).isTrue()
-        assertThat(controller.uiState.value.transcription).isEqualTo(TranscriptionState.Idle)
+        assertThat(handle.stopCalled).isTrue()
+        assertThat(handle.cancelCalled).isFalse()
         assertThat(recognizerFactory.createCount).isEqualTo(1)
+
+        handle.emitEndOfSpeech()
+        handle.emitResults("don't lose this note when I tap stop")
+
+        assertThat(controller.uiState.value.transcription)
+            .isEqualTo(TranscriptionState.Success("don't lose this note when I tap stop"))
+        assertThat(controller.uiState.value.editableText).isEqualTo("don't lose this note when I tap stop")
     }
 }

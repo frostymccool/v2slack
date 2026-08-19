@@ -46,6 +46,7 @@ interface SpeechRecognizerFactory {
 /** Minimal surface of [SpeechRecognizer] the engine actually drives. */
 interface SpeechRecognizerHandle {
     fun startListening(intent: Intent)
+    fun stopListening()
     fun cancel()
     fun destroy()
 }
@@ -59,6 +60,7 @@ class AndroidSpeechRecognizerFactory : SpeechRecognizerFactory {
         recognizer.setRecognitionListener(listener)
         return object : SpeechRecognizerHandle {
             override fun startListening(intent: Intent) = recognizer.startListening(intent)
+            override fun stopListening() = recognizer.stopListening()
             override fun cancel() = recognizer.cancel()
             override fun destroy() = recognizer.destroy()
         }
@@ -134,7 +136,18 @@ class TranscriptionEngine(
         newHandle.startListening(buildRecognizerIntent())
     }
 
-    /** User-initiated abort (e.g. tapped the button again while listening). */
+    /** User-initiated "I'm done speaking" (tapped the button again while listening). Tells the
+     * recognizer to finalize on whatever it's captured so far -- [onResults]/[onError] on the
+     * listener still fires normally, same as if it had auto-detected the end of speech. This is
+     * distinct from [cancel], which throws the in-flight capture away with no callback at all. */
+    fun stop() {
+        if (_state.value is TranscriptionState.Listening) {
+            handle?.stopListening()
+        }
+    }
+
+    /** Full abort: discards the in-flight capture with no result. Used when the whole session
+     * is going away (e.g. the ViewModel is cleared), not for a normal "done speaking" tap. */
     fun cancel() {
         handle?.cancel()
         releaseHandle()
