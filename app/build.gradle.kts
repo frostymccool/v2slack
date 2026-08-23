@@ -49,7 +49,10 @@ android {
     // Android refuses to install a new APK over the previous one ("App not installed"). This
     // key is debug-only: it can't publish to Play or sign a release build, so it's fine to commit.
     signingConfigs {
-        create("debug") {
+        // AGP already defines a "debug" SigningConfig by default -- reconfigure it in place
+        // (getByName) rather than create(), which collides with AGP's own default and fails
+        // the build with "SigningConfig with name 'debug' already exists".
+        getByName("debug") {
             storeFile = file("debug.keystore")
             storePassword = "android"
             keyAlias = "androiddebugkey"
