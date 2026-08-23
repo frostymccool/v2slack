@@ -43,7 +43,24 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    // A fixed, checked-in debug key -- not the auto-generated one AGP falls back to when none
+    // is configured. Every CI runner starts from a fresh machine with no ~/.android/debug.keystore,
+    // so without this, every single build ends up signed with a different random key and
+    // Android refuses to install a new APK over the previous one ("App not installed"). This
+    // key is debug-only: it can't publish to Play or sign a release build, so it's fine to commit.
+    signingConfigs {
+        create("debug") {
+            storeFile = file("debug.keystore")
+            storePassword = "android"
+            keyAlias = "androiddebugkey"
+            keyPassword = "android"
+        }
+    }
+
     buildTypes {
+        debug {
+            signingConfig = signingConfigs.getByName("debug")
+        }
         release {
             isMinifyEnabled = false
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
