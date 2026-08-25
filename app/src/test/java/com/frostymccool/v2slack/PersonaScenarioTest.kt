@@ -274,4 +274,23 @@ class PersonaScenarioTest {
             .isEqualTo(TranscriptionState.Success("don't lose this note when I tap stop"))
         assertThat(controller.uiState.value.editableText).isEqualTo("don't lose this note when I tap stop")
     }
+
+    // -- Clara: records a note, then decides to scrap it instead of sending -------------------
+
+    @Test
+    fun `Clara transcribes a note then taps Clear, and it's gone without being sent`() {
+        controller.onRecordTapped(hasMicPermission = true)
+        recognizerFactory.lastHandle!!.let {
+            it.emitReadyForSpeech()
+            it.emitResults("this note was a mistake")
+        }
+        assertThat(controller.uiState.value.editableText).isEqualTo("this note was a mistake")
+
+        controller.onClearTranscript()
+
+        assertThat(controller.uiState.value.editableText).isEmpty()
+        assertThat(controller.uiState.value.transcription).isEqualTo(TranscriptionState.Idle)
+        assertThat(webhookAction.invocations).isEmpty()
+        assertThat(deepLinkAction.invocations).isEmpty()
+    }
 }

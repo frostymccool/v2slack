@@ -101,6 +101,12 @@ class VoiceController(
         _uiState.value = _uiState.value.copy(sendState = SendState.Idle)
     }
 
+    /** Discards the transcript without sending it -- the "Clear" button next to Send. */
+    fun onClearTranscript() {
+        engine.reset()
+        _uiState.value = _uiState.value.copy(editableText = "", sendState = SendState.Idle)
+    }
+
     fun send() {
         val text = _uiState.value.editableText.trim()
         if (text.isEmpty()) {
@@ -162,6 +168,7 @@ class VoiceViewModel(application: Application) : AndroidViewModel(application) {
     fun onWebhookUrlChanged(url: String) = controller.onWebhookUrlChanged(url)
     fun onChannelHintChanged(hint: String) = controller.onChannelHintChanged(hint)
     fun onDismissError() = controller.onDismissError()
+    fun onClearTranscript() = controller.onClearTranscript()
     fun send() = controller.send()
 
     override fun onCleared() {

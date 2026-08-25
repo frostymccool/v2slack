@@ -8,6 +8,12 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.core.LinearOutSlowInEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -38,6 +44,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MenuAnchorType
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -54,6 +61,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
@@ -115,6 +123,7 @@ fun VoiceApp(viewModel: VoiceViewModel = viewModel()) {
                 onTextEdited = viewModel::onTextEdited,
                 onSend = viewModel::send,
                 onDismissError = viewModel::onDismissError,
+                onClearTranscript = viewModel::onClearTranscript,
                 padding = padding,
             )
             Screen.Settings -> SettingsScreen(
@@ -135,6 +144,7 @@ private fun RecordScreen(
     onTextEdited: (String) -> Unit,
     onSend: () -> Unit,
     onDismissError: () -> Unit,
+    onClearTranscript: () -> Unit,
     padding: PaddingValues,
 ) {
     val context = LocalContext.current
@@ -199,17 +209,26 @@ private fun RecordScreen(
                 minLines = 3,
             )
             Spacer(Modifier.height(12.dp))
-            Button(
-                onClick = onSend,
-                enabled = uiState.editableText.isNotBlank() && uiState.sendState !is SendState.Sending,
-                modifier = Modifier.fillMaxWidth(),
-            ) {
-                Text(
-                    when (uiState.outputMode) {
-                        OutputMode.WEBHOOK -> "Post to Slack"
-                        OutputMode.DEEP_LINK -> "Open in Slack"
-                    },
-                )
+            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                OutlinedButton(
+                    onClick = onClearTranscript,
+                    enabled = uiState.sendState !is SendState.Sending,
+                    modifier = Modifier.weight(1f),
+                ) {
+                    Text("Clear")
+                }
+                Button(
+                    onClick = onSend,
+                    enabled = uiState.editableText.isNotBlank() && uiState.sendState !is SendState.Sending,
+                    modifier = Modifier.weight(1f),
+                ) {
+                    Text(
+                        when (uiState.outputMode) {
+                            OutputMode.WEBHOOK -> "Post to Slack"
+                            OutputMode.DEEP_LINK -> "Open in Slack"
+                        },
+                    )
+                }
             }
         }
 
@@ -264,22 +283,60 @@ private fun RecordButton(state: TranscriptionState, onClick: () -> Unit) {
         is TranscriptionState.Error -> MaterialTheme.colorScheme.errorContainer to Icons.Filled.Mic
         else -> MaterialTheme.colorScheme.primary to Icons.Filled.Mic
     }
+    val isListening = state is TranscriptionState.Listening
+
+    // Expanding, fading ring repeated on a loop while listening -- an unmistakable "I'm
+    // actively recording" cue, distinct from the button just sitting there in a different
+    // color. Only animates while isListening; harmless (values just hold at rest) otherwise.
+    val pulseTransition = rememberInfiniteTransition(label = "listeningPulse")
+    val pulseScale by pulseTransition.animateFloat(
+        initialValue = 1f,
+        targetValue = if (isListening) 1.7f else 1f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(durationMillis = 1200, easing = LinearOutSlowInEasing),
+            repeatMode = RepeatMode.Restart,
+        ),
+        label = "pulseScale",
+    )
+    val pulseAlpha by pulseTransition.animateFloat(
+        initialValue = 0.45f,
+        targetValue = 0f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(durationMillis = 1200, easing = LinearOutSlowInEasing),
+            repeatMode = RepeatMode.Restart,
+        ),
+        label = "pulseAlpha",
+    )
+
     Box(
-        modifier = Modifier
-            .size(120.dp)
-            .clickable(enabled = state !is TranscriptionState.Processing, onClick = onClick)
-            .background(color = color, shape = CircleShape),
+        modifier = Modifier.size(160.dp),
         contentAlignment = Alignment.Center,
     ) {
-        if (state is TranscriptionState.Processing) {
-            CircularProgressIndicator(color = MaterialTheme.colorScheme.onSurfaceVariant)
-        } else {
-            Icon(
-                imageVector = icon,
-                contentDescription = "Record",
-                modifier = Modifier.size(48.dp),
-                tint = Color.White,
+        if (isListening) {
+            Box(
+                modifier = Modifier
+                    .size(120.dp)
+                    .scale(pulseScale)
+                    .background(color = color.copy(alpha = pulseAlpha), shape = CircleShape),
             )
+        }
+        Box(
+            modifier = Modifier
+                .size(120.dp)
+                .clickable(enabled = state !is TranscriptionState.Processing, onClick = onClick)
+                .background(color = color, shape = CircleShape),
+            contentAlignment = Alignment.Center,
+        ) {
+            if (state is TranscriptionState.Processing) {
+                CircularProgressIndicator(color = MaterialTheme.colorScheme.onSurfaceVariant)
+            } else {
+                Icon(
+                    imageVector = icon,
+                    contentDescription = "Record",
+                    modifier = Modifier.size(48.dp),
+                    tint = Color.White,
+                )
+            }
         }
     }
 }
