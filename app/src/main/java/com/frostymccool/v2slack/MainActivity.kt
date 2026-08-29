@@ -425,7 +425,7 @@ private fun statusLabel(state: TranscriptionState): String = when (state) {
     TranscriptionState.Idle -> "Tap to record"
     TranscriptionState.Listening -> "Listening…"
     TranscriptionState.Processing -> "Transcribing…"
-    is TranscriptionState.Success -> "Got it — review below"
+    is TranscriptionState.Success -> "Got it - review below or push to clear and start again"
     is TranscriptionState.Error -> "Couldn't transcribe that"
 }
 
